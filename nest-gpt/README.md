@@ -10,3 +10,5 @@
 1. https://platform.openai.com/organization/usage
 2. https://platform.openai.com/settings/organization/billing/overview
 3.
+
+# sk- proj - 1qx2hGTtLK5Ucd4tOXIkT3BlbkFJUCtG8OhioOGFnCVEUiAF

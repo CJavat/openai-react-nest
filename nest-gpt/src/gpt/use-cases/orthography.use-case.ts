@@ -11,8 +11,13 @@ export const orthographyCheckUseCase = async (
   const { prompt } = options;
 
   const completion = await openai.chat.completions.create({
-    messages: [{ role: 'user', content: 'Eres un asistente muy util.' }],
+    messages: [
+      { role: 'system', content: 'Eres un asistente muy util.' },
+      { role: 'user', content: prompt },
+    ],
     model: 'gpt-3.5-turbo',
+    temperature: 0.3,
+    max_tokens: 150,
   });
 
   console.log(completion);
