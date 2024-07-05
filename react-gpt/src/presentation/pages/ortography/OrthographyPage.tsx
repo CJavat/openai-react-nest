@@ -47,7 +47,6 @@ export const OrthographyPage = () => {
       ]);
     }
 
-    //TODO: Añadir el mensaje de isGPT en true
     setIsLoading(false);
   };
 
