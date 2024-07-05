@@ -1,6 +1,7 @@
 import { useState } from "react";
 import {
   GPTMessages,
+  GPTOrthographyMessage,
   MyMessage,
   TextMessageBox,
   TypingLoader,
@@ -10,6 +11,11 @@ import { orthographyUseCase } from "../../../core/use-cases";
 interface Message {
   text: string;
   isGPT: boolean;
+  info?: {
+    userScore: number;
+    errors: string[];
+    message: string;
+  };
 }
 
 export const OrthographyPage = () => {
@@ -20,12 +26,29 @@ export const OrthographyPage = () => {
     setIsLoading(true);
     setMessages((prev) => [...prev, { text: text, isGPT: false }]);
 
-    const data = await orthographyUseCase(text);
-    console.log(data);
-
-    setIsLoading(false);
+    const { errors, message, ok, userScore } = await orthographyUseCase(text);
+    if (!ok) {
+      setMessages((prev) => [
+        ...prev,
+        { text: "No se pudo realizar la corrección", isGPT: true },
+      ]);
+    } else {
+      setMessages((prev) => [
+        ...prev,
+        {
+          text: message,
+          isGPT: true,
+          info: {
+            userScore,
+            errors,
+            message,
+          },
+        },
+      ]);
+    }
 
     //TODO: Añadir el mensaje de isGPT en true
+    setIsLoading(false);
   };
 
   return (
@@ -37,7 +60,12 @@ export const OrthographyPage = () => {
 
           {messages.map((message, index) =>
             message.isGPT ? (
-              <GPTMessages key={index} text="Esto es de OpenAI" />
+              <GPTOrthographyMessage
+                key={index}
+                errors={message.info!.errors}
+                message={message.info!.message}
+                userScore={message.info!.userScore}
+              />
             ) : (
               <MyMessage key={index} text={message.text} />
             )
