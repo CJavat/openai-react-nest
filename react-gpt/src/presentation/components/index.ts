@@ -3,6 +3,7 @@ export * from "./sidebar/SidebarMenuItem";
 export * from "./chat-bubbles/GPTMessages";
 export * from "./chat-bubbles/MyMessage";
 export * from "./chat-bubbles/GPTOrthographyMessage";
+export * from "./chat-bubbles/GPTMessagesAudio";
 
 export * from "./loaders/TypingLoader";
 
