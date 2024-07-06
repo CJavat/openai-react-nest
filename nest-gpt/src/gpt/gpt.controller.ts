@@ -1,12 +1,19 @@
 import {
   Body,
   Controller,
+  FileTypeValidator,
   Get,
   HttpStatus,
+  MaxFileSizeValidator,
   Param,
+  ParseFilePipe,
   Post,
   Res,
+  UploadedFile,
+  UseInterceptors,
 } from '@nestjs/common';
+import { FileInterceptor } from '@nestjs/platform-express';
+import { diskStorage } from 'multer';
 import { GptService } from './gpt.service';
 import {
   OrthographyDto,
@@ -77,4 +84,36 @@ export class GptController {
     response.status(HttpStatus.OK);
     response.sendFile(filePath);
   }
+
+  @Post('audio-to-text')
+  @UseInterceptors(
+    FileInterceptor('file', {
+      storage: diskStorage({
+        destination: './generated/uploads',
+        filename: (req, file, cb) => {
+          const fileEXtension = file.originalname.split('.').pop();
+          const fileName = `${new Date().getTime()}.${fileEXtension}`;
+
+          return cb(null, fileName);
+        },
+      }),
+    }),
+  )
+  async audioToText(
+    @UploadedFile(
+      new ParseFilePipe({
+        validators: [
+          new MaxFileSizeValidator({
+            maxSize: 1000 * 1024 * 5,
+            message: 'File is bigger than 5 mb',
+          }),
+          new FileTypeValidator({ fileType: 'audio/*' }),
+        ],
+      }),
+    )
+    file: Express.Multer.File,
+  ) {
+    console.log({ file });
+    return 'ok';
+  } // @Body() textToAudioDto: TextToAudioDto,
 }
