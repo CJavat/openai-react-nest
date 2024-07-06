@@ -21,7 +21,6 @@ export const ProsConsPage = () => {
     setMessages((prev) => [...prev, { text: text, isGPT: false }]);
 
     const { ok, content } = await prosConsUseCase(text);
-    console.log(ok, content);
 
     if (!ok) return;
 
