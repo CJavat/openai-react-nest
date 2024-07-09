@@ -4,7 +4,7 @@ import {
   MyMessage,
   TypingLoader,
   TextMessageBox,
-  GPTMessagesImage,
+  GPTMessagesSelectableImage,
 } from "../../components";
 import {
   imageGenerationUseCase,
@@ -22,11 +22,19 @@ interface Message {
 
 export const ImageTunningPage = () => {
   const [isLoading, setIsLoading] = useState(false);
-  const [messages, setMessages] = useState<Message[]>([]);
+  const [messages, setMessages] = useState<Message[]>([
+    {
+      isGPT: true,
+      text: "Imagen Base",
+      info: {
+        alt: "Imagen Base",
+        imagenUrl:
+          "http://localhost:3000/gpt/image-generation/1720537911784.png",
+      },
+    },
+  ]);
   const [originalImageAndMask, setOriginalImageAndMask] = useState({
-    original: "http://localhost:3000/gpt/image-generation/1720482278834.png" as
-      | string
-      | undefined,
+    original: undefined as string | undefined,
     mask: undefined as string | undefined,
   });
 
@@ -37,14 +45,11 @@ export const ImageTunningPage = () => {
 
     if (!resp) return;
 
-    //! NO MUESTRA LA IMAGEN
-    console.log(resp);
-
     setMessages((prev) => [
       ...prev,
       {
         text: "Variación",
-        isGPT: false,
+        isGPT: true,
         info: { alt: resp.alt, imagenUrl: resp.url },
       },
     ]);
@@ -54,7 +59,9 @@ export const ImageTunningPage = () => {
     setIsLoading(true);
     setMessages((prev) => [...prev, { text: text, isGPT: false }]);
 
-    const imageInfo = await imageGenerationUseCase(text);
+    const { mask, original } = originalImageAndMask;
+
+    const imageInfo = await imageGenerationUseCase(text, original, mask);
     setIsLoading(false);
 
     if (!imageInfo)
@@ -80,7 +87,7 @@ export const ImageTunningPage = () => {
           <span>Editando</span>
           <img
             className="border rounded-xl w-36 h-36 object-contain"
-            src={originalImageAndMask.original}
+            src={originalImageAndMask.mask ?? originalImageAndMask.original}
             alt="Imagen Original"
           />
           <button onClick={handleVariation} className="btn-primary mt-2">
@@ -96,11 +103,26 @@ export const ImageTunningPage = () => {
 
             {messages.map((message, index) =>
               message.isGPT ? (
-                <GPTMessagesImage
+                // <GPTMessagesImage
+                //   key={index}
+                //   text={message.text}
+                //   imageUrl={message.info!.imagenUrl}
+                //   alt={message.info!.alt}
+                //   onImageSelected={(url) =>
+                //     setOriginalImageAndMask({ original: url, mask: undefined })
+                //   }
+                // />
+                <GPTMessagesSelectableImage
                   key={index}
                   text={message.text}
                   imageUrl={message.info!.imagenUrl}
                   alt={message.info!.alt}
+                  onImageSelected={(maskImageUrl) =>
+                    setOriginalImageAndMask({
+                      original: message.info?.imagenUrl,
+                      mask: maskImageUrl,
+                    })
+                  }
                 />
               ) : (
                 <MyMessage key={index} text={message.text} />

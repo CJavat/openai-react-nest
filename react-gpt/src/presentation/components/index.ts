@@ -5,6 +5,7 @@ export * from "./chat-bubbles/MyMessage";
 export * from "./chat-bubbles/GPTOrthographyMessage";
 export * from "./chat-bubbles/GPTMessagesAudio";
 export * from "./chat-bubbles/GPTMessagesImage";
+export * from "./chat-bubbles/GPTMessagesSelectableImage";
 
 export * from "./loaders/TypingLoader";
 
