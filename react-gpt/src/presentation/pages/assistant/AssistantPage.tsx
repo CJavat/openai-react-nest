@@ -33,7 +33,6 @@ export const AssistantPage = () => {
 
   useEffect(() => {
     if (threadId) {
-      setMessages([]);
       setMessages((prev) => [
         ...prev,
         { text: `Número de THREAD: ${threadId}`, isGPT: true },
